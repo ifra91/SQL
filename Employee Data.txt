@@ -1,0 +1,2 @@
+CREATE DATABASE 'Employee Data';
+USE 'Employee Data';

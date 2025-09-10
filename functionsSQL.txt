@@ -1,0 +1,535 @@
+
+
+
+Querying
+--------
+SELECT
+SELECT FROM
+
+SORTING
+--------
+ORDER BY --> Resulted sorted by selected attribute in ascending and descending order
+ 	ASC DESC
+
+FILTERING
+---------
+WHERE - conditions to select data
+SELECT DISTINCT - view unique values of a column
+AND - Boolean operator to view result where two conditions are fulfilled
+OR - Boolean operator to view result when either of the condition is fulfilled
+IN - matches value in a set
+NOT IN - when value does not match in a set
+BETWEEN - query from within a range of variables
+LIKE - match pattern using % or _
+LIMIT - to view specified number of rows
+IS NULL - test for null values
+
+Joining Tables
+--------------
+CONCAT_WS('', attribute1, attrubute2)
+AS for table and column aliases
+INNER JOIN - matching rows in another table
+LEFT JOIN - all rows from left table and matching rows from right
+RIGHT JOIN - opposite of left join it selects data from rows of right table
+RIGHT OUTER JOIN is same as right join.
+SELF JOIN join a table to self using alias and connect rows within same table
+CROSS JOIN - Cartesian product of multiple table.
+
+Grouping Data
+-------------
+GROUP BY - group rows based on columns, it returns one row of each group used after where clause,
+used with having, Select, distinct, order by, limit
+it is also used with aggregate functions
+--> sum, avg, min, max and count
+
+HAVING - to sort data using specific conditions used after group by clause
+it is applied to group of rows
+
+HAVING COUNT - filter using number of items 
+
+ROLL UP -  
+
+
+Subqueries
+----------
+SUBQUERY - nest one query into other 
+
+DERIVED TABLE - 
+
+EXISTS - 
+
+Set Operators
+-------------
+UNION - combine results
+EXCEPT - find difference in set of values
+INTERSECT - common rows in a query
+
+Storage Engines - software component responsible for how data is stored in database.
+
+command log in to my sql server -  mysql -u root -p
+
+
+CREATE DATABASE
+CREATE TABLE
+AUTO_INCREMENT - attribute fro primary key unique identifier
+LAST_INSERT_ID() to get the recent updated id.
+
+reset auto-increment values - 
+ALTER TABLE ---- AUTO_INCREMENT = value;
+
+add auto-increment column to an existing table
+ALTER TABLE ---- ADD auto_increment column
+
+ALTER TABLE
+RENAME TABLE --- TO ---
+
+ALTER TABLE DROP COLUMN
+ALTER TABLE ADD COLUMN
+
+TEMPORARY TABLE - structure is based on existing table
+CREATE TEMPORARY TABLE
+DROP TABLE
+
+TRUNCATE TABLE - allows to delete all rows from table, it is an implicit commit, cannot be rolled back.
+it is like DELETE option without where function.
+if foreign key present then truncate table statement will fail
+
+TRUNCATE() - it truncates number to a specified number of decimal places.
+similar to round()
+
+MYSQL constraints 
+-----------------
+Primary key - unique attribute
+multi-column primary key PRIMARY KEY(col1, col2, col3..)
+ALTER TABLE table_name ADD PRIMARY KEY(col1, col2, ...)
+ALTER TABLE --- DROP primary key
+
+Foreign key - link to group or column in another table, the relationship is established with the help of foreign key.
+REFERENCES keyword is used to define parent table
+REFERENCES parent_table(col_name, ...)
+
+5 reference options - 
+CASCADE - changes made in parent row are changed in the child table by matching rows
+SET NULL - if a row from parent row is updated/deleted the child table foreign column is set to null
+NO ACTION - same as restrict
+RESTRICT - row from parent table has a matching row in the child table, mysql rejects deleting or updatng rows in the parent table
+SET DEFAULT - recognized by mysql parser
+
+Disable foreign key checks - SET foreign_key_checks = 0;
+to enable set to 1
+when set to 0 we can add data to parent and child into any order
+when set to 1 we need to add data to parent first then to child.
+
+not null - values stored in a column must not be null, enforces rule that values in attribute must not be null.
+unique constraint - its an integrity constraint ensures uniqueness of values in a column or group of columns.
+It rejects the duplicate value to be inserted/updates in a column. it enfroces uniqueness.
+
+check constraint - 
+CONSTRAINT constraint_name
+CHECK (expression)
+ENFORCED or NOT ENFORCED
+
+it checks for the values entered, that they follow the constraint.
+
+default - specify default value for a column, specify the 
+
+Data Types Mysql
+----------------
+BIT - 
+INT - 
+BOOLEAN - 
+DECIMAL - 
+CHAR - 
+VARCHAR - 
+TEXT - 
+DATETIME -
+TIMESTAMP - holds combination of date and time, its a temporal data type 
+DEFAULT CURRENT_TIMESTAMP , ON UPDATE CURRENT_TIMESTAMP
+
+DATE - 
+TIME - 
+BINARY - 
+VARBINARY -
+BLOB -  Large binary files used to store image data files/ mp4 files
+ENUM - 
+column_name ENUM('value1', 'value2',...)
+
+JSON - 
+
+Modifying Data in MySql
+-----------------------
+insert, update and delete data from tables using mysql
+
+insert - 
+insert multiple rows 
+insert into select - 
+INSERT INTO ---- SELECT * FROM ANOTHER TABLE WHERE condition
+
+insert ignore - ignore errors for rows that cause errors
+
+insert datetime values - 
+UPDATE - 
+UPDATE JOIN - use join clause to update rows based on another table,
+
+  
+DELETE - 
+ON DELETE CASCADE - to delete child data of table when parent data is deleted  
+DELETE JOIN - delete data from multiple tables
+REPLACE - 
+
+Common Table Expressions
+------------------------
+
+CTE - it is a temporary result set that exists only for single sql statement
+SELECT, INSERT, UPDATE, DELETE
+derived table is not stored
+
+Recursive CTE - references itself, traversal of query until termination condition is met.
+it contains one select -> union all--> recursive statement(select statement) --> where(termination condition)
+
+
+Table Locking
+-------------
+
+LOCK TABLES - flag assoiciated with a table, it allows a client session to explicitly lock the table so that other sessions could not use same table
+during that specified period. A client session cannot acquire or release 
+
+LOCK TABLES table_name READ/WRITE                                                                    
+
+READ - can read data from the table without acquiring the lock. until read lock is released other session cannot perform write operation on it.
+WRITE - to update/add/delete values in a locked table
+
+UNLOCK TABLES - it releases any table locks helb by the current session. 
+
+Globalization
+-------------
+it determines how data is stored and sorted in text columns
+
+Character Set - collection of characters with unique encoding
+convert allows to convert string between different characters.
+cast converts string to different character set 
+
+CONVERT(expression USING character_set_name)
+CAST(string AS character_type CHARACTER SET character_set_name)
+
+SET NAMES 'charset' -to set a charset to the script
+
+Collation - set of rules used to compare characters in a particular character set.
+
+User Defined Variables
+----------------------
+Import CSV file into Mysql table
+
+@@secure_file_priv
+
+LOAD DATA LOCAL INFILE  'c:/temp/discounts.csv'
+INTO TABLE discounts
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+To upload data on a remote mysql server from local machine
+SET GLOBAL local_infile = 1;
+
+secure_file_priv tells address of directory where we can upload the file
+
+Export mysql table to CSV
+--------------------------
+SELECT * FROM orders
+INTO OUTFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/orders.csv' 
+FIELDS ENCLOSED BY '"' 
+TERMINATED BY ',' 
+ESCAPED BY '"' 
+LINES TERMINATED BY '\r\n';
+
+note : orers.csv must not exist in the directory
+
+MYSQL variables
+---------------
+pass a value from one sql statement to another statement in same session
+
+using @variable_name it is case-insensitive
+
+SET statement assigns value to the variable
+SET @variable_name = value;
+
+
+SELECT INTO variable - to store result set of a query in variable
+
+SELECT col1,col2..
+INTO @var1,@var2...
+FROM table_name
+Where condition;
+
+number of variables must be same as number of columns
+if query returns multiple rows then mysql shows error.
+
+to fix this set LIMIT=1
+
+
+ADVANCED TECHNIQUES
+-------------------
+
+Natural Sorting-  using order by col_name/col_number the column can be sorted in ascending and descending.
+		  using REGEX -- REGEXP_SUBSTR(col_name, 'pattern')
+
+Get row count - SELECT COUNT(*) FROM tablename -- getting number of rows in a table.
+		COUNT(* ROWS)
+
+Compare two tables - 1. using UNION statement to combine rows in both tables
+		     	SELECT 
+				table1.pk --> primary key col of t1
+				table1.col1 --> col of t1 to compare
+ 			FROM
+				table11
+			UNION ALL
+			SELECT
+				table2.pk --> primary key col of table2
+				table2.col1 --> col 2 of table 2 to compare
+			FROM 
+				table2	
+			
+			
+
+		     2. group rows based on primary key 
+
+			SELECT pk, col1
+			FROM
+			(
+				SELECT table1.pk, table1.col1
+				FROM table1
+				UNION ALL
+				SELECT table2.pk, table2.col2
+				FROM table2
+			) t
+
+			GROUP BY pk, col1
+			HAVING COUNT(*)=1
+			ORDER BY pk
+
+	EXAMPLE :3. compare the values and id columns of both tables
+			SELECT
+				id, title
+			FROM
+			(
+				SELECT
+					id, title		
+				FROM table1
+				UNION ALL
+				SELECT
+					id,title
+				FROM 
+					table2
+			) tbl
+			GROUP BY
+				id, title
+			HAVING
+				count(*) = 1
+			ORDER BY
+				id;
+## Group BY and Having Count - used to find unmatched records while comparing two tables
+
+
+Find Duplicate Values
+---------------------
+ SELECT column,
+	count(column)
+FROM
+	table_name
+GROUP BY column
+HAVING COUNT(column) > 1
+
+Delete Duplicate rows
+---------------------
+1. Query to return duplicate columns
+
+SELECT column, count(column)
+FROM contacts
+GROUP BY column
+HAVING COUNT(column) > 1;
+
+2. Delete duplicate rows using DELETE JOIN 
+
+DELETE table1 FROM column_name table1
+INNER JOIN Column_name table2
+WHERE table1.pk < table2.pk AND
+table1.column = table2.column;
+
+3. Delete using intermediate table
+	-create a new table
+	-insert distinct rows -- using group by column clause 
+	-drop original table
+	-alter new table name same as original one.
+
+4. Delete using ROW_NUMBER()
+
+Select statement 
+
+SELECT
+col1
+FROM
+(	
+SELECT
+	col1, col2,
+	ROW_NUMBER() OVER(PARTITION BY col1
+	ORDER BY col2
+	) AS row_num
+	FROM 
+	table_name
+	) t
+WHERE 
+row_num > 1;
+
+delete rows
+ 
+DELETE FROM
+	table1
+WHERE
+	col1 IN(
+		SELECT
+		   col1
+		 FROM
+		     (
+		     SELECT
+			col1, col2,
+			ROW_NUMBER() OVER(PARTITION BY col1
+			ORDER BY col2
+			) AS row_num
+		      FROM 
+		      table_name) 
+		t
+		WHERE 
+		row_num > 1);
+
+
+COPY TABLE
+----------
+
+CREATE table_name2 LIKE table_name1
+INSERT table_name2 SELECT * FROM table_name1
+
+Comparing tuples/rows of same table
+-----------------------------------
+CTE and LAG function is used to compare simultaneous entries in a row, most commonly used for querying data which requires number of orders comparision with time at which order was placed
+
+WITH cte_table AS
+(
+SELECT
+	col1,
+	date1 from_date,
+	LEAD(date1, 1) OVER(ORDER BY date1) to_date, qty
+	LEAD(qty, 1) OVER(ORDER BY date1) new_qty
+	FROM inventory_table
+)
+
+Get Data From cte from desired result set
+SELECT
+	col1,
+	from_date,
+	to_date,
+	(new_qty - qty) AS received_qty
+FROM
+	cte_table
+WHERE
+	to_date IS NOT NULL
+
+Selecting Random Variables in the Table
+---------------------------------------
+by RAND() funcion
+
+SELECT * FROM table_name
+ORDER BY RAND()
+LIMIT n 
+
+n is any number of rows selected randomly.
+
+By using inner join clause
+SELECT table1.*
+FROM table1
+INNER JOIN 
+	(
+	SELECT ROUND(RAND() * (SELECT MAX(id) FROM table2)) AS id
+		) AS alias
+	WHERE
+		table1.id >= table2_alias.id
+	LIMIT n;
+
+By using variables
+SELECT table.col_name
+FROM table
+(
+SELECT
+	ROUND(RAND() * SELECT MAX(id) FROM table)
+) random_num,
+@num := @num+1
+FROM (SELECT @num := 0) AS a, table LIMIT N) AS b, 
+table AS t
+WHERE b.random_num = t.id;
+
+
+Select nth Highest Record
+-------------------------
+ Steps for sorting records in order to get the nth highest record
+	-select data from table by limit with nth highest record in ascending order
+	-sort the result in descending order
+query for nth highest record in ascending orer
+SELECT * FROM table_name
+ORDER BY col_name ASC
+LIMIT N;
+
+query for to get the highest record
+SELECT * FROM
+(
+SELECT * FROM table_name
+ORDER BY col_name ASC
+LIMIT N 
+) AS t1
+ORDER BY Col_name DESC
+LIMIT 1;
+
+Reset auto_increment values
+---------------------------
+ALTER TABLE tablename
+AUTO_INCREMENT = value;
+
+
+Delete all rows from table and reset it to 
+TRUNCATE TABLE items
+
+NULL Values
+-----------
+It is represented by NULL and ''
+
+COALESCE - it is a functin that accepts a list of arguments and returns the first non-NULL argument
+
+NULLIF - accepts two arguments, if both are equal then returns NULL
+
+MAP NULL TO MEANINGFUL VALUES
+-----------------------------
+
+IFNULL - takes two arguments and returns first argument if it is not null
+
+
+
+SQL functions performs operations on given set of values, they are pre-defined and built-in
+aggregate functions
+count() --> count(*) counts all rows , count(column_name) counts non null values
+sum()
+avg()
+min()
+max()
+scalar functions
+string functions
+numeric
+
+
+LEFT() function to 
+
+RIGHT()
+
+TRAILING()
+
+ROW_NUMBER()
+
+                                                                                                                                                                                                                                                               

@@ -1,0 +1,89 @@
+DBMS 
+ACID properties
+DBMS vs File system
+data abstraction
+relational algebra
+RDBMS
+DDL/DML
+Transaction concurrency
+indexing B trees
+query optimization
+Normalization
+Entity Relation models
+keys primary, foreign, candidate, superkey
+---------------------------------------------
+
+DBMS and its types
+==================
+
+Database Mangement System is a data keeping software that allows to store data on servers
+which can be managed and retrieved easily. Data is basic building block of every organization
+for example it makes easier for an organization to keep its employee and student recorded stored 
+in such a manner so they can be retireved easily. 
+
+Collection of Data, that serves multiple application, 
+it is stored in separate physical sysytems independent 
+of the applications/progeam that use them.
+
+Database is collection of inter-related information
+
+=======================
+Database Implementation
+=======================
+The main purpose of data is to be used by end user, the database which uses data structure
+which provides ease to end user.
+Implementation is done through three levels where 
+
+First Level -> Internal level, physical level which concerns with the storage medium and platform 
+on which data is stored and what data structures are used to store data.
+
+Second Level -> Conceptual level, it describes the relation among data, and what data it represents.
+The user at this level is not concerned with the logic of data structure used at physical level.
+
+Third Level -> External level(view level), the user can view only information from data which is relevant to them.
+this level extracts the simplified ‌information for the user.
+
+
+================================
+Types of Data Management Systems
+================================
+Relational DBMS
+Hierarchical DBMS
+Network DBMS
+Object-Oriented DBMS
+NoSQL
+Cloud Database
+Centralized
+De-centralized/Distributed Database
+
+Database model is the information which is required to create a database,
+what type of data will be used 
+
+----------------
+Relational DBMS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
