@@ -1,0 +1,11 @@
+------------------------
+SQL - DATA ANALYSIS
+------------------------
+
+BASICS OF SQL 
+
+ADVANCED SQL
+
+DATA CLEANING
+
+EXPLORATORY DATA ANALYSIS
