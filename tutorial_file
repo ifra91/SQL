@@ -1,0 +1,1368 @@
+-- Query Data
+USE mydatabase;
+-- SQL Query classes
+select * from orders;
+-- SELECT
+-- FROM
+-- WHERE
+-- ORDER BY --> asc and desc
+-- Nested order by sort by multiple columns
+-- GROUP BY combine rows with same values, make ot aggregaetd and combine it can be used between where and orderby, attrubutes
+-- selected must be group by
+-- Having used after using group by HAVING (condition) 
+-- DISTINCT remove duplicates
+-- TOP (Limit)-- no of rows
+-- nested order by
+
+SELECT * FROM customers
+ORDER BY country ASC, score DESC;
+
+-- group by
+SELECT 
+	country,
+    SUM(score) AS aggregate
+FROM customers
+GROUP BY country;
+
+-- Execution Order vs Coding Order
+-- coding Order -- order of query syntax
+-- select distinct top
+-- from 
+-- where
+-- group by
+-- having
+-- order by
+-- Execute order -- the order of code/ query execution
+-- from
+-- where
+-- group by
+-- having 
+
+## DDL Data definittion Language
+-- defines structure of your data
+
+CREATE TABLE persons(
+id INT NOT NULL,
+person_name VARCHAR(50) NOT NULL,
+birth_date DATE,
+phone VARCHAR(15) NOT NULL,
+CONSTRAINT pk_persons PRIMARY KEY (id)
+);
+
+-- ALTER
+-- DROP
+
+## DML Data Manipulation Language
+-- Insert values -- syntax -- INSERT INTO table_name(colm1. col2, col3) Values (val1, val2, val3)
+-- Insert using select 
+
+-- UPDATE tablename set column = val1 
+
+USE mydatabase;
+
+select * from customers;
+
+update customers
+set score = 0
+where id = 4;
+-- delete from tablename where <condition> ; if where clause not defined than all rows will be deleted
+
+## Filtering Data
+#   WHERE
+-- comparision operators =, <>, =!, >, >=, <, <=
+-- Logical Operators AND OR NOT
+-- Range operator BETWEEN
+-- Membership Operator IN NOT IN
+
+# -- UNIONS and JOINS
+-- join types
+-- inner - only matching rows from both tables, only common data
+-- add table name before the column to avoid confusion in joins with same-named columns
+select * from customers c
+inner join orders o
+ON c.id = o.customer_id;
+select * from customers
+inner join orders
+ON id = customer_id;
+select
+	customers.id,
+	first_name,
+    orders.order_id,
+    sales
+from customers
+inner join orders
+ON id = customer_id;
+
+-- full - all rows from both table
+SELECT
+	c.id,
+    c.first_name,
+    o.order_id,
+    o.sales
+FROM customers AS c
+FULL JOIN orders AS o
+ON c.id = o.customer_id;
+
+-- left - returns rows from left and only matching from right
+ select 
+	c.id,
+    c.first_name,
+    o.order_id,
+    o.sales
+FROM customers c
+LEFT JOIN orders
+ON c.id = o.customer_id;
+
+-- right - all rows from right table and only matching from left table
+SELECT 
+	c.id,
+    c.first_name,
+    o.order_id,
+    o.sales
+FROM orders o
+RIGHT JOIN  customers c
+ON c.id = o.customer_id;
+
+-- recombine data, data enrichment, check existence
+
+-- Advanced 
+-- left anti join -- row from left table has no match in right table
+SELECT * FROM customers c
+LEFT JOIN orders o
+ON c.id = o.customer_id
+WHERE o.customer_id IS NULL;
+
+-- right anti join return rows from right table that has no match in left
+-- no matching data is viewed
+SELECT *
+FROM customers c
+RIGHT JOIN orders o
+ON c.id = o.customer_id 
+WHERE c.id IS NULL;
+
+-- full anti join
+-- returns only rows and don't match in either tables only unmatching data
+SELECT * FROM customers c
+JOIN orders o
+ON c.id = o.customer_id
+WHERE c.id IS NULL OR o.customer_id IS NULL;
+
+SELECT * FROM customers c 
+LEFT JOIN orders o
+ON c.id = o.customer_id
+WHERE order_id IS NOT NULL; 
+
+-- cross join -- combines every row from left with every row from right all possible combinations
+-- cartesian join
+SELECT * FROM customers
+CROSS JOIN orders;
+
+USE salesdb;
+
+Select 
+o.orderid AS OrderID,
+c.firstname AS CustomerName,
+p.product AS ProductName,
+o.sales AS Sales,
+p.price AS Price,
+e.firstname AS SalesPersonName
+from orders o
+join customers c
+ON o.customerid = c.customerid
+join products p
+ON p.productid = o.productid
+join employees e
+ON e.employeeid = o.salespersonid;
+
+select customerid, lastname
+from customers
+union
+select employeeid, lastname
+from employees;
+
+select 
+firstname,
+lastname
+from customers
+union all
+select 
+firstname,
+lastname
+from employees;
+
+-- except (minus)
+select
+firstname,
+lastname
+from employees
+EXCEPT
+select
+firstname,
+lastname
+from customers;
+
+select
+firstname,
+lastname
+from employees
+INTERSECT
+select
+firstname,
+lastname
+from customers;
+
+select * from orders
+union
+select * from orders_archive;
+
+-- DELTA DETECTION
+-- identify changes
+-- data pipelines in order to transfer data from source systems to data lakes
+-- EXCEPT is used for this purpose
+
+-- data completeness check
+-- when using except two times; the output must be empty in results.
+
+-- Combine the results of multiple queries into a single result set
+-- UNION UNION ALL EXCEPT INTERSECT
+
+-- RULES Same no. of columns, data types, order of columns
+-- ist query controls column names
+
+-- Row level FUnctions
+-- 1. String functions, numeric, date and time aggregate
+-- functions, when we wnat to amnipulate the data, transform
+-- A built-in sql code, accepts an input value processes it.
+-- Single row functions , multi row functions
+-- nested functions--> functions used inside other functions
+-- single
+		-- string, numeric, date&time, null (engineeers)
+        -- aggregate, window(analytical) functions (data analyst)
+-- Manipulate --- concat() combine, upper() uppercase, lower() lowercase, TRIM() remove spaces
+-- replace(),  counts characters
+select
+firstname,
+country,
+CONCAT(firstname, ' ', country) AS name_country,
+LOWER(firstname) AS first,
+UPPER(lastname) AS last,
+TRIM(firstname) as name
+from customers;
+
+select
+'123-456-7890' AS phone,
+REPLACE('123-456-7890', '-', '/') AS clean_phone;
+select
+'report.txt',
+REPLACE('report.txt', '.txt', '');
+select firstname, length(firstname)
+from customers;
+
+-- calculation --- 
+-- len() 
+-- string extraction
+-- left and right
+-- retrieve first two characters
+select
+firstname,
+LEFT(TRIM(firstname), 2) AS first_2_char,
+RIGHT(TRIM(firstname), 2) AS last_2_char
+from customers;
+
+-- substring function
+select firstname,
+SUBSTRING(TRIM(firstname), 2, length(firstname)) as sub
+from customers;
+
+-- number functions
+select 
+3.516,
+ROUND(3.516, 2) AS round_2,
+ROUND(3.516, 1) AS round_1,
+ROUND(3.516,0) AS round_0,
+-10,
+ABS(-10),
+ABS(10);
+
+-- date and time functions
+select
+orderid, orderdate, shipdate, creationtime, 
+GETDATE() Today
+from orders;
+
+-- DATE and TIME Functions
+
+-- PART EXTRACTION : day, month, year, datepart, datename, datetrunc, eomonth
+-- Format and casting : format, convert, cast
+-- Calculations : Datediff, dateadd
+-- Validation : ISDATE
+
+-- DAY, MONTH, YEAR
+-- DAY() - returns the day from a date
+-- MONTH() - returns the month from a date
+-- year() - returns the year from a date
+-- day(date), month(date), year(date)
+
+-- DATEPART(part we want to extract, date we want to extract from) - specific part of date as number
+select creationtime,
+DATEPART(year, creationtime) AS year_dp,
+DATENAME(weekday, creationtime) weekday_dn
+from orders;
+
+-- DATEDIFF
+-- DATENAME
+-- DATETRUNC
+
+select
+creationtime,
+count(*)
+from orders
+group by creationtime;
+
+-- EOMONTH End of month
+-- eomonth() it will change any day to last day of month
+
+select month(orderdate), COUNT(*) Numorders
+from orders
+group by month(orderdate);
+
+-- data filtering
+select * from orders
+where month(orderdate) = 2;
+
+-- functions parameter
+
+-- ALL Parts
+-- formatting and casting
+-- 
+select
+orderid,
+creationtime,
+FORMAT(creationtime, 'MM-dd-yyyy') USA_Format,
+FORMAT(creationtime, 'dd') dd,
+FORMAT(creationtime, 'ddd') ddd,
+FORMAT(creationtime, 'dddd') dddd
+from orders;
+
+select
+date_format(orderdate, 'MM yy') OrderDate,
+count(*)
+FROM orders
+group by date_format(orderdate, 'MM yy');
+
+-- data standardization
+-- 
+select
+convert(INT, '123') AS [string to int convert],
+convert(date, '2025-08-20') AS [string to date convert],
+creationtime,
+convert(DATE, creationtime) AS [datetime to date convert]
+from orders;
+
+-- cast, convert and format
+-- casting -- change any type to any type
+-- formatting -- any type to only string
+-- convert -- any type to any type
+
+SELECT 
+cast('123' AS INT) AS [string to int],
+cast(123 AS VARCHAR) AS [int to string],
+cast('2025-08-20' AS DATE) AS [string to date],
+creationtime,
+cast(creationtime AS DATE) AS [datetime to date],
+from orders;
+
+-- calculations
+-- dateadd(part, interval, date); add date and increases its values
+-- datediff(part, start_date, end_date) difference between two dates
+-- datepart() 
+
+select 
+orderid,
+orderdate,
+dateadd(month, 3, orderdate) AS threemonths
+from orders;
+
+-- handling nulls and Coalesce
+-- handle
+select customerid, score,
+coalesce(score, 99999)
+from customers
+order by coalesce(score, 9999);
+
+select
+customerid,
+score,
+case when score is null then 1 else 0 end flag
+from customers
+order by case when score is null then 1 else 0 end, score;
+
+-- NULLIF(column, static value) function - it compares a column and a static value
+-- used to replace a no-matching column  and static value with null
+-- instead of static value we can compare two columns
+
+-- price * quantity = sales --> 
+
+select
+orderid,
+sales,
+quantity,
+(sales/NULLIF(quantity, 0)) AS salesPrice
+from orders;
+
+-- is null - returns true if value is null
+-- is not null - returns true if the value is not null
+-- use case for filtering data is nul use case
+-- 
+
+select * from customers
+where score is null;
+
+-- null use case for left and rigth anti joins
+-- inner join
+
+select
+c.*,
+o.orderid
+from customers c
+left join orders o
+on c.customerid = o.customerid
+where o.customerid is null;
+
+select
+	-- cast(orderdate as date) orderdate,
+	orderdate,
+	isdate(orderdate),
+	case when isdate(orderdate) = 1 then cast(orderdate AS date)
+	end neworderdate
+from
+	(
+    select '2025-08-20' AS orderdate union
+    select '2025-08-21' union
+    select '2025-08-23' union
+    select '2025-08'
+    )t
+where isdate(orderdate) = 0;
+
+
+with orders AS (
+SELECT 1 Id, 'A' Category UNION
+SELECT 2, NULL UNION
+SELECT 3, '' UNION
+SELECT 4, ' '
+)
+SELECT
+*,
+DATALENGTH(category);
+
+-- coalesce( value1, value2 , value3) returns first non null value from the list
+-- it is available in all databases
+
+-- isnull is faster than coalesce
+-- limited to two values fast 
+-- sql server --> isnull
+-- oracle --> NVL
+-- mysql --> ifnull
+
+-- DATA aggreagtion
+-- sum() count() min() max() avg()
+
+select customerid, score, coalesce(score,0) score2,
+avg(score) over() AvgScores,
+avg(coalesce(Score,0)) OVER() avgScores2
+from customers;
+
+select * from customers 
+where score IS NOT NULL;
+
+-- right and left anti joins with is null
+select 
+c.* from customers c
+left join orders o on
+c.customerid = o.customerid
+where o.customerid is null;
+
+with orders AS (
+select 1 id, 'A' category union
+select 2, null union
+select 3, ' '
+) 
+select *,
+NULLIF(TRIM(category), '') Policy2,
+coalesce(NULLIF(TRIM(category), ''), 'unknown') Policy3
+ from orders;
+
+-- data policy
+-- use nulls and empty strings but avoid using blank spaces
+
+-- case statements
+/*
+CASE
+	WHEN condition1 THEN result1
+    WHEN condition2 THEN result2
+    .
+    .
+    .
+    ELSE result
+END
+*/
+-- categorizing data
+-- derive new columns and data transformation
+-- group the data into different categories based on certain conditions
+
+select
+category,
+sum(sales) AS totalsales
+from
+(select 
+	orderid,
+	sales, 
+	case
+		when sales > 50 then 'high'
+		when sales > 20 then 'medium'
+		else 'low'
+	end category
+from orders)t
+group by category
+order by totalsales desc
+;
+
+-- retrieve employee details with gender displayed as full text
+select
+	employeeid,
+	firstname,
+	lastname,
+	gender,
+		case
+		when gender ='F' then 'female'
+		when gender = 'M' then 'male'
+		else 'not available'
+	end genderfulltext
+from employees;
+
+-- retrieve customers details with abbreviated country code
+select
+	customerid,
+    firstname,
+    lastname,
+    country,
+    CASE
+		WHEN country = 'germany' then 'DE'
+        WHEN country = 'USA' then 'US'
+        ELSE 'n/a'
+	END countryAbbr
+from customers;
+
+-- Nulls with a specific values
+-- average scores of customers and treat nulls as 0
+-- additionally provide details such as customerid and lastname
+select 
+firstname,
+lastname,
+score,
+CASE
+	WHEN score is null then 0
+    ELSE score
+END scoreclean,
+avg(case
+	when score is null then 0
+    else score
+end) over() avgcustclean,
+avg(score) over() avgCust
+from customers;
+
+-- count how many times each customer has made as order with sales greater than 30
+select
+	customerid,
+    orderid,
+    SUM(
+    CASE 
+		WHEN sales > 30 THEN 1
+		ELSE 0
+		END) totalorders,
+	COUNT(*) totalorders
+from orders
+group by customerid, orderid;
+
+-- use cases for group by
+-- derived new information
+-- categorizing data
+-- mapping values
+-- handling nulls
+-- conditional aggregations
+-- aggregate functions take multiple rows and apply operation
+-- sum(), count(), avg(), 
+-- find the highest sales , lowest sales
+ 
+select
+count(*) AS total_nr_orders,
+sum(sales) AS total_sales,
+avg(sales) AS avg_sales,
+max(sales) AS max_sales,
+min(sales) AS min_sales
+from orders
+group by customerid;
+
+select 
+	sum(score) AS SUM,
+	avg(score) AS avg_score,
+	max(score) AS max_score,
+	min(score) AS min_score
+from customers
+group by customerid;
+
+-- WINDOW analytical functions
+-- window vs group  by
+-- WINDOW FUNCTION 
+-- perform calculations (e.g. aggregation) on a specific subset of data,
+-- without losing the level of details of rows.
+-- returns a single row for each group in group by function, simple aggregation
+-- returns a grouped result for each row in window function, window function
+-- Window functions
+-- 3 categories -- aggregate , rank, 
+
+-- need of window sql functions -- advanced data analytics + details
+select sum(sales) from orders; /*total sales*/
+/*total sales for each order*/
+select orderid, orderdate, productid, SUM(sales) totalsales 
+from orders
+group by orderid, orderdate, productid;
+select SUM(sales) over(partition by productid) totalsalesbyproducts from orders;
+
+-- WINDOW syntax
+-- window functions OVER ( Partition by/ order by / frame)
+-- The syntax of each function --> 
+-- perform calculations within 
+-- aggregate count sum, avg, max, min
+-- rank -- row_number, rank, dense rank, cume_dist, percent rank, ntile
+-- value (analytics functions) - lead, lag, first value, last values
+
+-- function expression
+-- OVER (partition by category)
+-- calculation 
+
+-- find total across all orders aditionally provide details such order id and order date
+-- total sales for each combination of product and order status
+-- additionally provide details such as order id, order date
+-- 
+select 
+orderid,
+orderdate,
+productid,
+orderstatus,
+sales,
+sum(sales) over() totalsales,
+sum(sales) over(partition by productid) totalsalesproduct,
+sum(sales) over(partition by productid, orderstatus) salesbyproduct
+from orders;
+
+-- order by to sort functions
+select
+	orderid,
+	orderdate,
+	sales,
+    RANK() OVER(order by sales) ranksales
+from orders;
+
+-- Window Frame clause
+-- entire data, entire data divided into 2 types
+select
+row_number() over(order by orderstatus)  sno,
+orderid,
+orderdate,
+orderstatus,
+sales,
+sum(sales) over(partition by orderstatus order by orderdate rows between current row and 2 following) totalsales,
+sum(sales) over(partition by orderstatus order by orderdate rows between unbounded preceding and current row) totalsales1,
+sum(sales) over(partition by orderstatus order by orderdate rows unbounded preceding) totalsales
+from orders; 
+
+select 
+orderid, orderdate, orderstatus, sales,
+sum(sales) over(partition by orderstatus) totalsales
+from orders
+group by orderid, orderdate;
+
+-- 4 rules of window functions
+-- we can use it with select and orderby clause
+-- nesting window functions not allowed
+-- window function can be used with group by only if the same columns are used.
+
+/*rank customers based on their total sales*/
+select customerid,
+sum(sales) totalsales,
+RANK() OVER(order by sum(sales) DesC) rankCust
+from orders
+group by customerid;
+
+-- Aggregate window functions
+-- avg(sales) over(partition by productid order by sales)
+-- count returns number of rows regardless of nulls
+-- count(1) = count(*)
+
+select count(*) from orders;
+select
+	orderid,
+    orderdate,
+    count(*) over() totalorders
+from orders
+group by orderid;
+-- total number of orders for each customers
+select 
+	orderid, 
+    orderdate,
+    customerid,
+    count(*) over() totalorders,
+    count(*) over(partition by customerid) ordersbycustomers
+from orders;
+
+-- find total number of customers with all customers details
+select
+*,
+count(*) over() totalcustomers,
+count(score) over() totalscores,
+count(country) over() totalcountries 
+from customers;
+
+select * from orders;
+select orderid, count(*) over(partition by orderid) checkpk
+from orders_archive;
+
+-- use case for count
+-- overall analysis
+-- category analysis
+-- quality checks: identify nulls
+-- quality checks: identify duplicates
+-- SUM() sum of all values
+select
+	orderid,
+    orderdate,
+    sales,
+    sum(sales) over() totalsales,
+    sum(sales) over(partition by productid) salesbyproduct
+from orders;
+
+-- find percentage contribution of each products sales to the total sales
+-- percentage contribution = (product sales/total sales) * 100
+-- details of orderid
+select
+	orderid,
+    productid,
+    sales,
+    sum(sales) over() totalsales,
+    cast(sales as float)/ sum(sales) over()*100,
+    AVG(sales) OVER(partition by productid),
+    AVG(sales) over() AvgSales,
+    AVG(sales) over(partition by productid) Avgsales
+from orders;
+
+-- Find avg scores of customers
+-- additionally provide such customerid and lastname
+select customerid, lastname, score, 
+coalesce(score,0) customerscore,
+avg(score) over() avgscore,
+avg(coalesce(score, 0)) over() avgScorewithoutNull
+from customers;
+
+-- find all orders where sales are higher than the average sales
+-- we cannot use where clause with window functions, we are using subquery
+-- use case compare average --> helps to evaluate whether a value is above or below the average
+select * from
+(select 
+	orderid,
+    productid,
+    sales,
+    avg(sales) over() avgsales
+from orders)
+t where sales > avgsales;
+
+-- min/max
+-- find higest and lowest sales for all orders
+select
+	orderid,
+    orderdate,
+    productid,
+    MAX(sales) over() highestsales,
+    MIN(sales) over() lowestsales,
+    MAX(sales) over(partition by productid) highestsales,
+    MIN(sales) over(partition by productid) lowestsales
+from orders;
+
+-- show employees with highest salaries
+select * from(
+select
+	employeeid, 
+    firstname,
+    salary,
+    MAX(salary) OVER() Higestsalary
+from employees)
+t where salary = Higestsalary;
+
+-- calculate deviation of each sale from current sales from  min and max sales amount
+select 
+	orderid,
+	sales,
+	MAX(sales) over() maxsales,
+    MIN(sales) over() minsales,
+    sales - min(sales) over() as mindeviation,
+    max(sales) over() - sales as maxdeviation
+from orders;
+
+-- Running and Rolling Total
+-- They aggregate sequence of members, and the aggregation is updates each time a new member is added
+-- Running total --> it calculates all values from beginning up to the current point without dropping off older data
+-- Rolling Total --> Aggregate all values it works on specific time window. as new member is added, the oldest data point will be dropped
+-- running total
+-- sum(sales) over(order by month )
+-- by default it is a frame clause --> rows betweeen unbounded preceding and current row
+-- rolling total
+-- sum(sales) over(order by month rows between 2 preceeding and current row)
+-- calculate moving average(similar to running total) of each product over time
+-- moving average only including next order
+select
+	orderid,
+	productid,
+    orderdate,
+    sales,
+    avg(sales) over(partition by productid) avgbyproduct,
+    avg(sales) over(partition by productid order by orderdate) movingtotal,
+    avg(sales) over(partition by productid order by orderdate rows between current row and 1 following) Rollingavg
+from orders;
+
+-- use cases for aggregate windows function
+-- overall analysis
+-- total per groups analysis
+-- part to whole analysis
+-- comparision analysis 1. average 2. higest lowest
+-- identify duplicates
+-- outlier detection
+-- running total
+-- moving avg or data
+
+-- Window Ranking Function
+-- TASK rank products sorting
+-- integer based ranking
+-- row_number(), rank(), dense_rank(), Ntile()
+-- percentage cume_dist() , percent_rank()
+-- row_number() assign a unique number to each in a wiindow
+-- rank() assign a rank o each row in a window, with gaps
+-- dense_rank() assign a rank to each row in a window, without gaps
+
+select 
+	orderid,
+    productid,
+    sales,
+    row_number() over(order by sales) salesRank
+from orders;
+-- rank() it handles ties, it leaves gaps in ranking
+-- dense_rank it does not leave any gap and not skip any ranking
+select
+	orderid,
+    productid,
+    sales,
+    row_number() over(order by sales desc) sales_rank,
+    rank() over(order by sales desc) salesrank_dsc,
+    dense_rank() over(order by sales desc) salesrnk_dns
+from orders;
+
+-- top n highest sales for each product
+select * from(
+select
+	orderid,
+    productid,
+    sales,
+    row_number() over(partition by productid order by sales desc) rankbyproduct
+from orders)
+t where rankbyproduct = 1;
+    
+-- bottom n analysis; find the lowest customers based on their total sales
+select*from(
+select 
+	orderid,
+    customerid,
+    sum(sales) totalsales,
+    row_number() over(order by sum(sales)) rankcustomers
+from orders
+group by orderid, customerid)
+t where rankcustomers <= 2;
+    
+-- generate unique ids
+-- assign unique ids to the rows of the orders archive table
+select
+*,
+	row_number() over(order by orderid, orderdate)  as uniqueid
+from orders_archive;
+    
+-- data cleanising
+-- return a clean result without duplicates
+select*from(
+select*,
+row_number() over(partition by orderid order by creationtime desc) rn
+ from orders_archive)
+ t where rn > 1;
+
+-- row_number use cases
+-- top n analysis, bottom n analysis, assign unique ids, quality checks:identify duplicates
+-- ntile() --> divides the rows into a specified number of approximately equal groups (buckets)
+-- bucket size = no. of rows/ no. of buckets buckets are groups
+-- larger group comes first
+select
+	orderid,
+    sales,
+    NTILE(1) over(order by sales desc) onebucket,
+    NTILE(2) over(order by sales desc) onebucket,
+    NTILE(3) over(order by sales desc) onebucket,
+    NTILE(4) over(order by sales desc) onebucket
+from orders;
+-- ntile function is used for data segmentation and etl processing, equalizing load processing
+-- segment all orders into 3 categories high, medium and low
+select *,
+case when buckets = 1 then 'high'
+	 when buckets = 2 then 'medium'
+     when buckets = 3 then 'low'
+end salesegmentation
+from (
+select
+	orderid,
+    sales,
+    ntile(3) over(order by sales desc) buckets
+from orders)
+t ;
+
+select
+	*,
+    ntile(2) over(order by sales desc) buckets
+from orders;
+
+-- cume_dist -- percent_rank
+-- cumulative distribution calculates --> distribution of data points within a window
+-- position number in value / number of rows
+-- inclusive current row is included 
+    -- percent rank
+    -- position number in value -1 / number of rows
+    -- current row is excluded
+
+-- find the products that fall within the highest 40% of the prices
+select * from products;
+
+select *,
+concat(distrank*100, '%') Rank_disk
+from(
+select 
+	product,
+	productid,
+    price,
+    cume_dist() over(order by price desc) cumerank,
+    percent_rank() over(order by price desc) distrank
+from products
+)t where distrank <= 0.4 ;
+	
+-- Value window functions
+-- access a value from other row
+-- lag(), lead(), first_value(), last_value()
+-- access value from the next row lead
+-- lag access value from a previous row
+-- offset number of row fwd or backward from the current row default = 1
+-- month - over - month analysis
+-- time series analysis -- patterns and trends over time
+-- year - over - year --> analyze overall growth or decline of the business's performance over time
+-- month - over - month --> short-term trends and discover patterns in seasonality
+select * , currentmonthsales - previousmonthsales AS monmsales
+from
+(select 
+	orderid,
+    orderdate,
+    month(orderdate) ordermonth,
+    sum(sales) currentmonthsales,
+    lag(sum(sales)) over (order by month(orderdate)) previousmonthsales
+from orders
+group by 
+	orderid,
+    orderdate,
+	month(orderdate)
+    )t ;
+    
+-- customer retention analysis
+-- measure customers behaviour and loyalty to help businesses build strong relationships with customers
+-- In order to analyse customer loyalty, rank customers based on the average days between their orders
+select
+customerid,
+avg(daysuntilnextorder) avgdays,
+rank() over (order by coalesce(avg(daysuntilnextorder),0)) rankavg
+from
+(
+select 
+	orderid,
+    customerid,
+    orderdate currentorder,
+    lead(orderdate) over(partition by customerid order by orderdate) nextorder,
+    datediff(orderdate, lead(orderdate) over(partition by customerid order by orderdate)) daysuntilnextorder
+from orders
+)
+t group by customerid;
+--  use case to find customer retention
+-- first_value() and last_value
+-- range between unbounded preceding and current row
+-- last_value(sales) over(order by )
+
+-- find lowest and highest sales for each product
+select
+	orderid,
+    productid,
+    sales,
+    first_value(sales) over(partition by productid order by sales) lowestSales,
+    last_value(sales) over(partition by productid order by sales
+    rows between current row and unbounded following) highestSales,
+    first_value(sales) over(partition by productid order by sales desc) highestSales2,
+    min(sales) over(partition by productid) lowestsales2,
+    max(sales) over(partition by productid) highestsales3,
+    sales - first_value(sales) over(partition by productid order by sales desc) comparehighvalues
+from orders;
+
+-- ADVANCED SQL Techniques 
+-- subqueries
+-- cte
+-- views
+-- ctas table and temp tables
+-- stored procedure
+-- triggers
+
+-- 1. SUBQUERIES 
+-- redundancy, performance issues, complexity hard to maintain, security, db stress
+-- data model
+-- big queries may be challenging to resolve 
+-- solutions subquery
+-- db architecture
+-- Database engine - it is the brain of db used to retrieve, store and manage data within db.
+-- disk storage: long term memory, where data is stored permanently
+-- cache storage : fast short term memory data is stored temporarily
+-- disk temp/catalog/user
+-- user data storage - it's the main content of the database, where actual data that users care about is stored.
+-- system catalog - db internal storage for its own information, a blue print that keeps track of everything about the database itself not the user data
+-- metadata - data about data, information about the stored data
+-- Infromation schema - a system-defined with built-in views that provide info about database, like tables and columns
+-- temporary data storage- space used for short term task like processing queries or sorting data, once these tasks are completed storage is cleared.
+-- how simple query works
+
+-- subqueries 
+-- only be used from main query
+-- STEPS TO WRITE A QUERY
+-- step 1 >> JOIN TABLES
+-- step 2 >> FILTERING
+-- step 3 >> TRANSFORMATIONS
+-- step 4 >> AGGREGATIONS
+-- Types and Categories of subquery
+-- dependency -- non-correlated -&&- corelated main query
+-- Result Types -- scalar subquery(single row) & row query(returns multiple rows) & table(multiple rows and columns)
+-- Location/Clauses -- 
+-- select
+-- from
+-- join
+-- where -- comparision operator() -- logical operators(IN ANY all, exists)
+-- comparision operators-- user filter data by comparing two values
+
+select * from orders;
+-- find the product that has avg price higher than all products
+
+select 
+productid,
+price,
+avg(price) over() avgPrice
+from products;
+-- main query
+select * from
+	-- subquery
+    (SELECT
+    productid,
+    price,
+    avg(price) over() avgPrice
+    from products
+    )t where price > avgPrice;   
+-- rank customers based on their total amount of sales
+-- mainquery
+select *,
+rank() over (order by totalsales desc) customerRank
+ from(
+-- subquery
+select
+customerid,
+sum(sales) totalsales
+from orders
+group by customerid) t;
+
+-- SELECT CLAUSE subquery
+-- show the product ids, names, prices, and total number of orders
+select productid, product, price
+from products;
+select count(*) totalorders
+from orders;
+-- main query
+select 
+	productid,
+    product,
+    price,
+    -- subquery
+    (select count(*) from orders) as totalorders
+from products;
+-- sub query in JOIN CLAUSE
+-- used to prepare the data(filtering or aggregation) before joining it with other tables.
+-- show all customer details and find the total orders of each customer
+-- main query
+select * from customers c
+LEFT JOIN(
+select 
+	customerid, 
+    count(*) totalorders 
+	from orders
+	group by customerid) o
+ON c.customerid = o.customerid;
+ 
+ -- subquery in where clause
+ -- main query
+ select * from products;
+ select 
+ productid,
+ price,
+ (select avg(price) from products) avgPrice
+ from products
+ where price > (select avg(price) from products);
+ 
+ -- subquery IN operator
+ -- show details of orders placed by orders in germany
+ select * from orders where customerid IN (1,4);
+ 
+ select * from orders
+ where customerid IN
+	 (select 
+	 customerid
+	 from customers
+	 where country = 'Germany');
+ 
+ -- where country not germany
+ select * from orders
+ where customerid NOT IN
+	(
+    select customerid
+    from customers
+    where country = 'Germany'
+    );
+    
+-- find female employees whose salaries are greater than the salaries of any male employees
+-- main query
+select 
+	employeeid,
+	firstname,
+	salary
+from employees
+where gender = 'F' AND Salary > ANY (select salary from employees where gender = 'M');
+
+select 
+	employeeid,
+	firstname,
+	salary
+from employees
+where gender = 'M';
+
+-- ALL OPERATOR
+select 
+	employeeid,
+	firstname,
+	salary
+from employees
+where gender = 'F' AND Salary > ALL (select salary from employees where gender = 'M');
+
+-- dependancy
+-- non co-related sub query -- a subquery that can run independently from the main query
+-- co-related subquery -- a subquery that relays on values from the main query
+-- show all customer details and find total orders of each customer
+select * from customers;
+select *,
+(select customerid, count(*) from orders group by customerid) totalsales
+from customers;
+
+-- main query
+select * from orders o
+	where exists (select 1
+	from customers c
+	where country = 'Germany'
+	AND c.customerid = o.customerid
+) ;
+
+-- CTE Common Table Expression - temporary, names result set(virtual table), that can be used multiple times within your query
+-- to simplify and organize complex query
+-- Main Purpose of CTE?
+-- join --> aggregations(sum) --> join --> aggregations(avg)
+-- redundancy --> subquery
+-- in cte step 1. joins , 2.agregations(sum) , 3. aggregations(avg)
+-- Execute CTE --> 
+-- two types --> recursive and non-recursive
+-- standalone --> self-contained, runs independently
+-- show all customer details and find the total orders of each customer
+-- main query
+select *,
+(select count(*) from orders o where o.customerid = c.customerid) totalsales
+from customers c;
+
+-- CTE Queries
+-- step 1: find total sales per customer
+WITH CTE_Total_Sales AS
+	(
+    SELECT
+    customerid,
+    SUM(sales) AS Total_Sales
+    FROM orders
+    GROUP BY customerid
+    ORDER BY customerid
+    ),
+-- step 2 : find the last order date for each customer(standalone CTE)
+CTE_Last_order AS
+(
+SELECT
+	customerid,
+    max(orderdate) AS last_order
+FROM orders
+GROUP BY customerid
+)
+-- Rank customers based on total sales per customer
+, CTE_Customer_Rank AS
+(
+SELECT
+	customerid,
+	Total_Sales,
+	RANK() OVER(Order by Total_Sales desc) AS cst_rank
+FROM CTE_Total_Sales
+),
+-- STEP 4 : segment customers based on their total sales
+CTE_Customer_Segments AS
+(
+SELECT
+	customerid,
+    CASE WHEN Total_Sales > 100 THEN 'High'
+		 WHEN Total_Sales > 50 THEN 'Medium'
+         ELSE 'LOW'
+	END CustomerSegments
+FROM CTE_Total_Sales
+)
+SELECT 
+	c.customerid,
+    c.firstname,
+    c.lastname,
+    cts.Total_Sales,
+    clo.last_order,
+    ccr.cst_rank,
+    ccs.CustomerSegments
+FROM customers c
+LEFT JOIN CTE_Total_Sales cts
+ON cts.customerid = c.customerid
+LEFT JOIN CTE_last_order clo
+ON clo.customerid = c.customerid
+LEFT JOIN CTE_Customer_Rank ccr
+ON ccr.customerid = c.customerid
+LEFT JOIN CTE_Customer_Segments ccs
+ON 	ccs.customerid = c.customerid;
+-- Multiple standalone CTE
+-- Nested CTE
+-- Best Practices of CTE rethink and refactor try to reduce number of ctes
+-- try to not have more than 5 ctes
+-- NON - RECURSIVE CTE
+-- only executed once without any repetition
+-- RECURSIVE CTE --
+-- Self- referencing query that repeatedly processes data until a specific condition is met
+-- GENERATE A SEQUENCE OF NUMBER FROM 1 to 20
+-- step 1 Anchor Query
+
+WITH Series AS (
+	SELECT 1 AS MyNumber
+    UNION ALL
+    SELECT
+    MyNumber + 1
+    FROM Series
+    WHERE MyNumber < 20
+)SELECT * FROM Series;
+
+-- Task: Show the employee hierarchy by displaying each employees level within the organization
+WITH CTE_Emp_Hierarchy AS
+(
+-- Anchor Query
+SELECT
+	employeeid,
+    firstname,
+    managerid,
+    1
+FROM employees e
+WHERE e.managerid IS NULL
+UNION ALL
+-- Recursive Query
+SELECT 
+	e.employeeid,
+    e.firstname,
+    e.managerid,
+	1+1
+FROM employees e)
+select * from employees e
+JOIN CTE_Emp_Hierarchy ceh
+ON e.managerid = ceh.employeeid;
+
+-- Views Database-- stored in structured way
+-- schema -- logical layer that organizes data-related object group
+-- view does not store any data
+-- 3 level architecture of db
+-- physical layer high complexity lowest abstarction --> logical level ---> view level
+-- views are virtual table they dont persist in database, easy to maintain, only for viewing
+-- central complex query logic
+-- find the running total of sales for each month
+
+/*create view v_monthly_summary AS
+(
+SELECT
+datediff(month, orderdate) ordermonth,
+sum(sales) totalsales,
+count(orderid) totalorders,
+sum(quantity) totalquantities
+from orders
+group by datediff(month, orderdate)
+)*/
+
+-- T SQL Transact SQL
+-- Hide Complexity
+-- task to provide a complied view 
+-- details from orders, product and customers and employees
+ create view orderdetails AS
+ (
+ select 
+	o.orderid,
+    o.orderdate,
+    p.productid, 
+    c.customerid,
+    c.firstname +' ' + c.lastname as customername,
+    c.country,
+    e.firstname +' ' + e.lastname as employee,
+    e.department,
+    o.sales,
+    o.quantity
+from orders o
+left join products p
+ON p.productid = o.productid
+left join customers c
+ON c.customerid = o.customerid  
+left join employees e
+ON e.employeeid = o.salespersonid
+);
+select * from orderdetails;
+-- views use case
+-- a view for a sales team
+-- combines details from all team s
+-- and excludes data related to the usa
+
+select * from orderdetails
+where country != 'USA';
+-- views can be used as datamarts
+-- CTAS 
+-- Optimize Performance
+
+Select * from customers c
+LEFT OUTER JOIN orders o
+ON c.customerid = o.customerid;
+
+Select * from customers c
+CROSS JOIN orders o;
